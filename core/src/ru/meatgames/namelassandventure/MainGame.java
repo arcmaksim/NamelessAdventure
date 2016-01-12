@@ -147,7 +147,7 @@ public class MainGame extends ApplicationAdapter implements InputProcessor {
 
 		mModels_ = new ArrayList<Model>();
 		mModelInstances_ = new ArrayList<GameObject>();
-		Vector3 b = new Vector3(0, 1, 0);
+		Vector3 b = new Vector3(0, 0, 1);
 		ModelBuilder modelBuilder = new ModelBuilder();
 
 		for (int i=0;i<mMap_.getSize();i++) {
@@ -156,8 +156,7 @@ public class MainGame extends ApplicationAdapter implements InputProcessor {
 						new Material(),
 						VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates));
 				mModelInstances_.add(new GameObject(mModels_.get(mModels_.size() - 1), mModels_.get(mModels_.size() - 1).nodes.get(0).id, true));
-				//mModelInstances_.get(mModelInstances_.size() - 1).transform.translate(gridStep * (i % mMap_.getWidth()), gridStep * (i / mMap_.getHeight()), 0f).rotate(b, 90);
-				mModelInstances_.get(mModelInstances_.size() - 1).transform.translate(gridStep * (i % mMap_.getWidth()), 0f, gridStep * (i / mMap_.getHeight()));
+				mModelInstances_.get(mModelInstances_.size() - 1).transform.translate(gridStep * (i % mMap_.getWidth()), 0f, gridStep * (i / mMap_.getHeight())).rotate(b, 90);
 				mModelInstances_.get(mModelInstances_.size() - 1).materials.first().set(TextureAttribute.createDiffuse(mMapObjectsDB_.getTexture(mMap_.getObject(i).getType())));
 			}
 		}
@@ -210,17 +209,17 @@ public class MainGame extends ApplicationAdapter implements InputProcessor {
 			public void clicked(InputEvent event, float x, float y) {
 				if (mTimer.isEmpty()) {
 					final int playerNextX = (int) Math.cos(Math.toRadians(angle));
-					final int playerNextY = (int) Math.sin(Math.toRadians(angle));
-					if (mMap_.getObject(playerX - playerNextX + (playerY - playerNextY) * mMap_.getWidth()) == null) {
+					final int playerNextZ = (int) Math.sin(Math.toRadians(angle));
+					if (mMap_.getObject(playerX - playerNextX + (playerZ - playerNextZ) * mMap_.getWidth()) == null) {
 						mTimer.scheduleTask(new Timer.Task() {
 							@Override
 							public void run() {
-								cam.position.add(playerNextX * -1 * walkingAnimationDistance, playerNextY * -1 * walkingAnimationDistance, 0);
+								cam.position.add(playerNextX * -1 * walkingAnimationDistance, 0, playerNextZ * -1 * walkingAnimationDistance);
 								cam.update();
 							}
 						}, delay, walkingAnimationInterval, (int) (walkingAnimationSteps - 1f));
 						playerX -= (int) Math.cos(Math.toRadians(angle));
-						playerY -= (int) Math.sin(Math.toRadians(angle));
+						playerZ -= (int) Math.sin(Math.toRadians(angle));
 						mEasterEgg.addAction(2);
 					} else {
 						Gdx.input.vibrate(mainVibratePattern, -1);
@@ -239,17 +238,17 @@ public class MainGame extends ApplicationAdapter implements InputProcessor {
 				if (mTimer.isEmpty()) {
 					final float tempAngle = (angle <= 0) ? 360f + angle - 90f : angle - 90f;
 					final int playerNextX = (int) Math.cos(Math.toRadians(tempAngle));
-					final int playerNextY = (int) Math.sin(Math.toRadians(tempAngle));
-					if (mMap_.getObject(playerX + playerNextX + (playerY + playerNextY) * mMap_.getWidth()) == null) {
+					final int playerNextZ = (int) Math.sin(Math.toRadians(tempAngle));
+					if (mMap_.getObject(playerX + playerNextX + (playerZ + playerNextZ) * mMap_.getWidth()) == null) {
 						mTimer.scheduleTask(new Timer.Task() {
 							@Override
 							public void run() {
-								cam.position.add(playerNextX * walkingAnimationDistance, playerNextY * walkingAnimationDistance, 0);
+								cam.position.add(playerNextX * walkingAnimationDistance, 0, playerNextZ * walkingAnimationDistance);
 								cam.update();
 							}
 						}, delay, walkingAnimationInterval, (int) (walkingAnimationSteps - 1f));
 						playerX += (int) Math.cos(Math.toRadians(tempAngle));
-						playerY += (int) Math.sin(Math.toRadians(tempAngle));
+						playerZ += (int) Math.sin(Math.toRadians(tempAngle));
 						mEasterEgg.addAction(3);
 					} else {
 						Gdx.input.vibrate(mainVibratePattern, -1);
@@ -268,18 +267,18 @@ public class MainGame extends ApplicationAdapter implements InputProcessor {
 				if (mTimer.isEmpty()) {
 					final float tempAngle = (angle >= 360f) ? 360f - angle + 90f : angle + 90f;
 					final int playerNextX = (int) Math.cos(Math.toRadians(tempAngle));
-					final int playerNextY = (int) Math.sin(Math.toRadians(tempAngle));
-					if (mMap_.getObject(playerX + playerNextX + (playerY + playerNextY) * mMap_.getWidth()) == null) {
+					final int playerNextZ = (int) Math.sin(Math.toRadians(tempAngle));
+					if (mMap_.getObject(playerX + playerNextX + (playerZ + playerNextZ) * mMap_.getWidth()) == null) {
 						mTimer.scheduleTask(new Timer.Task() {
 							@Override
 							public void run() {
-								cam.position.add(playerNextX * walkingAnimationDistance, playerNextY * walkingAnimationDistance, 0);
+								cam.position.add(playerNextX * walkingAnimationDistance, 0, playerNextZ * walkingAnimationDistance);
 								cam.update();
 							}
 						}, delay, walkingAnimationInterval, (int) (walkingAnimationSteps - 1f));
 						mEasterEgg.addAction(1);
 						playerX += (int) Math.cos(Math.toRadians(tempAngle));
-						playerY += (int) Math.sin(Math.toRadians(tempAngle));
+						playerZ += (int) Math.sin(Math.toRadians(tempAngle));
 					} else {
 						Gdx.input.vibrate(mainVibratePattern, -1);
 					}
@@ -339,18 +338,18 @@ public class MainGame extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(stage);
 
 		mTimer = new Timer();
-		mQuaternionLeft = new Quaternion(new Vector3(0, 0, 1), (int) -turningAnimationAngle);
-		mQuaternionRight = new Quaternion(new Vector3(0, 0, 1), (int) turningAnimationAngle);
+		mQuaternionLeft = new Quaternion(new Vector3(0, 1, 0), (int) turningAnimationAngle);
+		mQuaternionRight = new Quaternion(new Vector3(0, 1, 0), (int) -turningAnimationAngle);
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 		modelBatch = new ModelBatch();
 		cam = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Matrix4 ma = cam.combined;
-		cam.position.set(gridStep * playerX, gridStep * playerY, 0.0f);
-		cam.lookAt(gridStep * playerX + 10f, gridStep * playerY, 0);
-		Vector3 a = new Vector3(1, 0, 0);
-		cam.rotate(a, -90);
+		cam.position.set(gridStep * playerX, 0.0f, gridStep * playerZ);
+		cam.lookAt(gridStep * playerX + 10f, 0, gridStep * playerZ);
+		//Vector3 a = new Vector3(1, 0, 0);
+		//cam.rotate(a, -90);
 		cam.near = 0.1f;
 		cam.far = 100f;
 		cam.update();
