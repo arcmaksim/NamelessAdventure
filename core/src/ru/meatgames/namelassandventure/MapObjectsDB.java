@@ -16,6 +16,9 @@ public class MapObjectsDB {
     private ArrayList<Texture> mTextures_;
 
     public static final int WALL = 0;
+    public static final int STONEWALL = 1;
+    public static final int BOOK_SHELF = 2;
+    public static final int BOOK_SHELF_EMPTY = 3;
     public static final int EMPTY = -1;
 
     private MapObjectsDB() {
